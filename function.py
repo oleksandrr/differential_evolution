@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import differential_evolution
-import numpy; from numpy import (exp, sqrt, abs)
-from time import clock
+import numpy, time, differential_evolution
+
+from numpy import (exp, sqrt, abs)
 
 def function(vec):
     (a11, a22, b11, b22, b13, a, b, phi, theta) = vec
@@ -45,29 +45,20 @@ def function(vec):
     return (var4*var29 + var32*var37 + var40*var60 +
                         var63*var68 + var71*var82 + var85*var90)/4
 
-population = numpy.random.uniform(-1.0, 1.0, (40, 9))
-
-##### BEGIN TIMING #####
-t_start = clock()
+t_start = time.clock()
 
 (iterations, (costs, population)) = differential_evolution.minimize(
-                                    function, population,
-                                    0.90, 0.95, 1.0e-12, 250, 12500,
+                                    function, numpy.random.uniform(-1.0, 1.0, (50, 9)),
+                                    0.850, 0.975, 1.0e-12, 250, 12500,
                                     mutation_method="MDE5", selection_method="Storn-Price",
                                     output_function=None
                                    )
 
-t_total = clock() - t_start
-##### END TIMING #####
+t_total = time.clock() - t_start
 
+print "Performed", iterations, "iterations, taking", t_total, "seconds."
+
+numpy.set_printoptions(precision=16,linewidth=109)
 best_index = numpy.argmin(costs)
-best_cost = costs[best_index]
-best_individual = population[best_index]
-
-numpy.set_printoptions(precision=16,threshold=50,linewidth=109)
-print "Final optimized parameter vector:\n", best_individual
-print "Final optimized cost function value:", best_cost
-
-print "Iterations performed:", iterations
-print "Time taken for minimization:", t_total, "seconds"
-
+print "Optimized function value:", costs[best_index]
+print "Optimized parameter vector:\n", population[best_index]

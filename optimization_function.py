@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-import differential_evolution
-import numpy; from numpy import (inf, exp, sqrt, abs)
+import numpy, differential_evolution
+
+from numpy import (exp, sqrt, abs, inf)
 
 def function(vec):
     (a11, a22, b11, b22, b13, a, b, phi, theta) = vec
@@ -62,7 +63,7 @@ def meta_DE(objective_function, initial_population, F, C,
 
         print "F = %16.15f, C = %16.15f --> %16.15e after %d iterations." % (F, C, mean_cost, iterations)
 
-        return mean_cost # + iterations
+        return mean_cost
     else:
         print "(Constraint violation.)"
 
@@ -73,29 +74,22 @@ def meta_DE_harness(vec):
 
     (F, C) = vec
 
-    initial_population = numpy.random.uniform(-1.0, 1.0, (50, 9))
+    return meta_DE(
+            function, numpy.random.uniform(-1.0, 1.0, (50, 9)),
+            F, C, 0.1, 10, 1000,
+            mutation_method="MDE5", selection_method="Storn-Price"
+           )
 
-    return meta_DE(function, initial_population,
-                   F, C, 0.1, 10, 1000,
-                   mutation_method="MDE5", selection_method="Storn-Price"
-                  )
-
-
-print "Performing differential evolution parameter optimization..."
-
-population = numpy.random.uniform(0, 1, (20, 2))
 
 (iterations, (costs, population)) = differential_evolution.minimize(
-                                    meta_DE_harness, population,
-                                    0.60, 0.90, 0.01, 10, 100,
-                                    mutation_method="MDE5", selection_method="elitist",
-                                    stochastic=True, output_function=None
-                                   )
+                                     meta_DE_harness, numpy.random.uniform(0, 1, (20, 2)),
+                                     0.60, 0.90, 0.01, 10, 100,
+                                     mutation_method="MDE5", selection_method="elitist",
+                                     stochastic=True
+                                    )
+
+print "Performed", iterations, "iterations."
 
 best_index = numpy.argmin(costs)
-best_cost = costs[best_index]
-best_individual = population[best_index]
-
-print "Number of iterations performed:", iterations
-print "Final optimized parameter vector:\n", best_individual
-print "Final optimized cost function value:", best_cost
+print "Optimized function value:", costs[best_index]
+print "Optimized parameter vector:\n", population[best_index]
