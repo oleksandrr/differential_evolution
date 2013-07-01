@@ -43,7 +43,7 @@ def function(vec):
     var90 = var89**2; 
     
     return (var4*var29 + var32*var37 + var40*var60 +
-                        var63*var68 + var71*var82 + var85*var90)/4
+            var63*var68 + var71*var82 + var85*var90)/4
 
 t_start = time.clock()
 
